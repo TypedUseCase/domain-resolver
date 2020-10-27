@@ -1,6 +1,7 @@
 Domain Resolver
 ===============
 
+[![NuGet Version and Downloads count](https://buildstats.info/nuget/Tuc.DomainResolver)](https://www.nuget.org/packages/Tuc.DomainResolver)
 ![Check](https://github.com/TypedUseCase/domain-resolver/workflows/Check/badge.svg)
 [![tuc-docs](https://img.shields.io/badge/documentation-tuc-orange.svg)](https://typedusecase.github.io/domain/)
 
