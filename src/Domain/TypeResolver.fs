@@ -1,7 +1,7 @@
 namespace Tuc.Domain
 
 module private TypeResolvers =
-    open FSharp.Compiler.SourceCodeServices
+    open FSharp.Compiler.Symbols
 
     type TypeResolver = FSharpType -> FSharpType option
 

@@ -1,6 +1,6 @@
 namespace Tuc.Domain
 
-open FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.Symbols
 
 [<RequireQualifiedAccess>]
 module Resolver =
@@ -138,7 +138,7 @@ module Resolver =
 
         | [ stream ] when stream.DisplayName.EndsWith "Stream" && stream.DisplayName.Length > "Stream".Length ->
             let argument =
-                stream.UnionCaseFields
+                stream.Fields
                 |> Seq.toList
                 |> collectUnionCaseFields (TypeName stream.DisplayName) output
 
@@ -164,7 +164,7 @@ module Resolver =
                     Name = parent
                     ConstructorName = singleCaseUnion.DisplayName
                     ConstructorArgument =
-                        singleCaseUnion.UnionCaseFields
+                        singleCaseUnion.Fields
                         |> Seq.toList
                         |> collectUnionCaseFields (TypeName singleCaseUnion.DisplayName) output
                 }
@@ -182,7 +182,7 @@ module Resolver =
                             {
                                 Name = caseName
                                 Argument =
-                                    c.UnionCaseFields
+                                    c.Fields
                                     |> Seq.toList
                                     |> collectUnionCaseFields caseName output
                             }

@@ -4,14 +4,12 @@ storage: none
 source https://api.nuget.org/v3/index.json
 nuget FSharp.Core ~> 5.0
 nuget FSharp.Data ~> 4.0
-nuget FSharp.Compiler.Service ~> 39.0
+nuget FSharp.Compiler.Service ~> 40.0
 nuget MF.ConsoleApplication ~> 2.0
 
-group Tests
-    storage: none
-    source https://api.nuget.org/v3/index.json
-    nuget Expecto
-    nuget YoloDev.Expecto.TestSdk
+// Tests
+nuget Expecto
+nuget YoloDev.Expecto.TestSdk
 
 // [ FAKE GROUP ]
 group Build

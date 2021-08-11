@@ -1,6 +1,6 @@
 namespace Tuc.Domain
 
-open FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.CodeAnalysis
 open FSharp.Compiler.Text
 
 type ParsedDomain = ParsedDomain of FSharpCheckProjectResults
@@ -61,7 +61,7 @@ module Parser =
 
             if output.IsDebug() then output.Options "Result:" [
                 ["DependencyFiles"; parseFileResults.DependencyFiles |> sprintf "%A"]
-                ["Errors"; parseFileResults.Errors |> sprintf "%A"]
+                ["Errors"; parseFileResults.HasCriticalErrors |> sprintf "%A"]
                 ["ProjectContext"; parseFileResults.ProjectContext |> sprintf "%A"]
             ]
         )
