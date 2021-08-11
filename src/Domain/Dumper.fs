@@ -1,6 +1,6 @@
 namespace Tuc.Domain
 
-open FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.Symbols
 
 [<RequireQualifiedAccess>]
 module Dump =
@@ -119,7 +119,7 @@ module Dump =
                     "Returns"
                 ]
 
-                uc.UnionCaseFields |> dumpFields output
+                uc.Fields |> dumpFields output
             )
 
     let rec private dumpEntities parent: DumpMany<FSharpEntity> = fun output entities ->
