@@ -373,6 +373,46 @@ module AsyncResult =
     let ofTaskCatch f x : AsyncResult<_, _> =
         x |> ofTask |> catch f
 
+     /// Run asyncResults in Parallel, handles the errors and concats results
+    let ofParallelAsyncResults<'Success, 'Error> (f: exn -> 'Error) (results: AsyncResult<'Success, 'Error> list): AsyncResult<'Success list, 'Error list> =
+        results
+        |> List.map (mapError List.singleton)
+        |> Async.Parallel
+        |> ofAsyncCatch (f >> List.singleton)
+        |> bind (
+            Seq.toList
+            >> Validation.ofResults
+            >> Result.mapError List.concat
+            >> ofResult
+        )
+
+    /// Run asyncs in Parallel, handles the errors and concats results
+    let ofParallelAsyncs<'Success, 'Error> (f: exn -> 'Error) (asyncs: Async<'Success> list): AsyncResult<'Success list, 'Error list> =
+        asyncs
+        |> Async.Parallel
+        |> ofAsyncCatch (f >> List.singleton)
+        |> map Seq.toList
+
+    /// Run asyncResults in Parallel, handles the errors and concats results
+    let ofSequentialAsyncResults<'Success, 'Error> (f: exn -> 'Error) (results: AsyncResult<'Success, 'Error> list): AsyncResult<'Success list, 'Error list> =
+        results
+        |> List.map (mapError List.singleton)
+        |> Async.Sequential
+        |> ofAsyncCatch (f >> List.singleton)
+        |> bind (
+            Seq.toList
+            >> Validation.ofResults
+            >> Result.mapError List.concat
+            >> ofResult
+        )
+
+    /// Run asyncs in Parallel, handles the errors and concats results
+    let ofSequentialAsyncs<'Success, 'Error> (f: exn -> 'Error) (asyncs: Async<'Success> list): AsyncResult<'Success list, 'Error list> =
+        asyncs
+        |> Async.Sequential
+        |> ofAsyncCatch (f >> List.singleton)
+        |> map Seq.toList
+
     //-----------------------------------
     // Utilities lifted from Async
 
@@ -405,44 +445,43 @@ module AsyncResult =
 /// The `asyncResult` computation expression is available globally without qualification
 [<AutoOpen>]
 module AsyncResultComputationExpression =
+    open System
 
     type AsyncResultBuilder() =
-        member __.Return(x) = AsyncResult.retn x
-        member __.Bind(x, f) = AsyncResult.bind f x
+        member __.Return (value: 'Success): AsyncResult<'Success, 'Error> =
+            async.Return <| result.Return value
 
-        member __.ReturnFrom(x) = x
-        member this.Zero() = this.Return ()
+        member __.ReturnFrom(asyncResult: AsyncResult<'Success, 'Error>): AsyncResult<'Success, 'Error> =
+            asyncResult
 
-        member __.Delay(f) = f
-        member __.Run(f) = f()
+        member __.Zero (): AsyncResult<unit, 'Error> =
+            async.Return <| result.Zero ()
 
-        member this.While(guard, body) =
-            if not (guard())
-            then this.Zero()
-            else this.Bind( body(), fun () ->
-                this.While(guard, body))
+        member __.Bind (asyncResult: AsyncResult<'SuccessA, 'Error>, (f: 'SuccessA -> AsyncResult<'SuccessB, 'Error>)): AsyncResult<'SuccessB, 'Error> =
+            asyncResult |> AsyncResult.bind f
 
-        member this.TryWith(body, handler) =
-            try this.ReturnFrom(body())
-            with e -> handler e
+        member __.Delay (generator: unit -> AsyncResult<'Success, 'Error>): AsyncResult<'Success, 'Error> =
+            async.Delay generator
 
-        member this.TryFinally(body, compensation) =
-            try this.ReturnFrom(body())
-            finally compensation()
+        member this.Combine (computation1: AsyncResult<unit, 'Error>, computation2: AsyncResult<'U, 'Error>): AsyncResult<'U, 'Error> =
+            this.Bind(computation1, fun () -> computation2)
 
-        member this.Using(disposable:#System.IDisposable, body) =
-            let body' = fun () -> body disposable
-            this.TryFinally(body', fun () ->
-                match disposable with
-                    | null -> ()
-                    | disp -> disp.Dispose())
+        member __.TryWith (computation: AsyncResult<'Success, 'Error>, handler: exn -> AsyncResult<'Success, 'Error>): AsyncResult<'Success, 'Error> =
+            async.TryWith(computation, handler)
 
-        member this.For(sequence:seq<_>, body) =
-            this.Using(sequence.GetEnumerator(),fun enum ->
+        member __.TryFinally (computation: AsyncResult<'Success, 'Error>, compensation: unit -> unit): AsyncResult<'Success, 'Error> =
+            async.TryFinally(computation, compensation)
+
+        member __.Using (resource: 'SuccessA when 'SuccessA :> IDisposable, binder: 'SuccessA -> AsyncResult<'SuccessB, 'Error>): AsyncResult<'SuccessB, 'Error> =
+            async.Using(resource, binder)
+
+        member this.While (guard: unit -> bool, computation: AsyncResult<unit, 'Error>): AsyncResult<unit, 'Error> =
+            if not <| guard () then this.Zero ()
+            else this.Bind(computation, fun () -> this.While (guard, computation))
+
+        member this.For (sequence: #seq<'Success>, binder: 'Success -> AsyncResult<unit, 'Error>): AsyncResult<unit, 'Error> =
+            this.Using(sequence.GetEnumerator (), fun enum ->
                 this.While(enum.MoveNext,
-                    this.Delay(fun () -> body enum.Current)))
-
-        member this.Combine (a,b) =
-            this.Bind(a, fun () -> b())
+                    this.Delay(fun () -> binder enum.Current)))
 
     let asyncResult = AsyncResultBuilder()

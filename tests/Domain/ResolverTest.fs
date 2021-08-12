@@ -2,6 +2,7 @@ module Tuc.Domain.Test.Parser
 
 open Expecto
 open System.IO
+open ErrorHandling
 
 let (</>) a b = Path.Combine(a, b)
 
@@ -41,7 +42,7 @@ module Domain =
     type Case = {
         Description: string
         Domain: string
-        Expected: Result<ResolvedType list, TypeName list>
+        Expected: Result<ResolvedType list, AsyncResolveError>
     }
 
     let case description domain expected =
@@ -263,8 +264,8 @@ module Domain =
         let resolvedDomain =
             domain
             |> Parser.parse output
-            |> List.singleton
-            |> Resolver.resolve output
+            |> Resolver.resolveOneAsync output
+            |> Async.RunSynchronously
 
         match expected, resolvedDomain with
         | Ok expected, Ok actual -> Expect.equal (actual |> List.sort) (expected |> List.sort) description
