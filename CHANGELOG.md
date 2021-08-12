@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+
+## 3.0.0 - 2021-08-12
 - [**BC**] Change function `Parser.parse` to return Async Result
 - [**BC**] Change `Resolver.resolve` function to return a `ResolveError` on error
 - Add `Resolver.resolveAsync` function
