@@ -3,6 +3,20 @@ namespace Tuc.Domain
 open FSharp.Compiler.Symbols
 
 [<RequireQualifiedAccess>]
+type ResolveError =
+    | UnresolvedTypes of TypeName list
+
+[<RequireQualifiedAccess>]
+type AsyncResolveError =
+    | ParseError of ParseError list
+    | UnresolvedTypes of TypeName list
+
+[<RequireQualifiedAccess>]
+module internal AsyncResolveError =
+    let ofResolveError = function
+        | ResolveError.UnresolvedTypes types -> AsyncResolveError.UnresolvedTypes types
+
+[<RequireQualifiedAccess>]
 module Resolver =
     open Option.Operators
     open TypeResolvers
@@ -297,7 +311,7 @@ module Resolver =
                     :: resolvedTypes
                     |> output.Options (sprintf "Resolved (or scalar) types [%d]:" (resolvedTypes |> List.length))
 
-    let resolve output (parsedDomains: ParsedDomain list): Result<ResolvedType list, _> =
+    let resolve output (parsedDomains: ParsedDomain list): Result<ResolvedType list, ResolveError> =
         let emptyResolvedTypes: ResolvedTypes = Map.empty
 
         // resolve all scalar types in advance
@@ -331,4 +345,36 @@ module Resolver =
         | unresolvedTypes ->
             unresolvedTypes
             |> List.map ResolvedType.name
+            |> ResolveError.UnresolvedTypes
             |> Error
+
+    let resolveOne output (parsedDomain: ParsedDomain): Result<ResolvedType list, ResolveError> =
+        [ parsedDomain ]
+        |> resolve output
+
+    open ErrorHandling
+    open ErrorHandling.AsyncResult.Operators
+
+    let resolveOneAsync output (parseDomain: AsyncResult<ParsedDomain, ParseError>): AsyncResult<ResolvedType list, AsyncResolveError> =
+        asyncResult {
+            let! parsedDomain = parseDomain <@> (List.singleton >> AsyncResolveError.ParseError)
+
+            let! resolved =
+                parsedDomain
+                |> resolveOne output
+                |> AsyncResult.ofResult <@> AsyncResolveError.ofResolveError
+
+            return resolved
+        }
+
+    let resolveAsync output (parseDomains: AsyncResult<ParsedDomain list, ParseError list>): AsyncResult<ResolvedType list, AsyncResolveError> =
+        asyncResult {
+            let! parsedDomains = parseDomains <@> AsyncResolveError.ParseError
+
+            let! resolved =
+                parsedDomains
+                |> resolve output
+                |> AsyncResult.ofResult <@> AsyncResolveError.ofResolveError
+
+            return resolved
+        }
