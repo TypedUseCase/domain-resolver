@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+
+## 3.0.1 - 2021-08-13
 - [_Internal_] Update `ErrorHandling`
 
 ## 3.0.0 - 2021-08-12
