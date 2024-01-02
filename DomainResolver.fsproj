@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <PackageId>Tuc.DomainResolver</PackageId>
     <Description>Library for resolving a Domain types out of a F# script (.fsx) file(s).</Description>
     <Version>3.0.1</Version>
