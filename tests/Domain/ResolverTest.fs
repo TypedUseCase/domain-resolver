@@ -275,7 +275,7 @@ module Domain =
 
 [<Tests>]
 let parserTests =
-    let output = MF.ConsoleApplication.Output.console
+    let output = MF.ConsoleStyle.ConsoleStyle()
 
     testList "Domain.Resolver" [
         testCase "should parse and resolve types" <| fun _ ->
