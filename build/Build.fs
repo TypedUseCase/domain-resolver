@@ -23,7 +23,9 @@ let main args =
             Summary = "Library for resolving a Domain types out of a F# script (.fsx) file(s)."
             Git = Git.init ()
         }
-        Specs = Spec.defaultLibrary
+        Specs =
+            Spec.defaultLibrary
+            |> Spec.mapLibrary (fun library -> { library with NugetApi = NugetApi.AskForKey })
     }
 
     args |> Args.run
