@@ -6,7 +6,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <PackageId>Tuc.DomainResolver</PackageId>
     <Description>Library for resolving a Domain types out of a F# script (.fsx) file(s).</Description>
-    <Version>3.0.1</Version>
+    <Version>3.1.0</Version>
     <PackageProjectUrl>https://github.com/TypedUseCase/domain-resolver</PackageProjectUrl>
     <RepositoryUrl>https://github.com/TypedUseCase/domain-resolver.git</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
