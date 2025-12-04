@@ -1,4 +1,5 @@
 FSharp.Core
 FSharp.Data
 FSharp.Compiler.Service
-MF.ConsoleApplication
+Feather.ConsoleApplication
+Feather.ErrorHandling

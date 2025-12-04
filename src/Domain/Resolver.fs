@@ -23,9 +23,9 @@ module Resolver =
 
     type private ResolvedTypes = Map<DomainName option * TypeName, ResolvedType>
 
-    type private Collect<'In, 'Out> = MF.ConsoleApplication.Output -> 'In list -> 'Out
-    type private CollectMany<'In, 'Out> = MF.ConsoleApplication.Output -> 'In list -> 'Out list
-    type private CollectResolvedTypes = MF.ConsoleApplication.Output -> FSharpEntity option -> ResolvedTypes -> FSharpEntity list -> ResolvedTypes
+    type private Collect<'In, 'Out> = Feather.ConsoleApplication.Output -> 'In list -> 'Out
+    type private CollectMany<'In, 'Out> = Feather.ConsoleApplication.Output -> 'In list -> 'Out list
+    type private CollectResolvedTypes = Feather.ConsoleApplication.Output -> FSharpEntity option -> ResolvedTypes -> FSharpEntity list -> ResolvedTypes
 
     /// Cast IList or other Enumerable to list and pass to a function
     let inline private (|>>) input f =
@@ -293,7 +293,7 @@ module Resolver =
             |>> (@) entities
             |> collectEntities (Some e) acc
 
-    let private debugResolvedTypes (output: MF.ConsoleApplication.Output) resolvedTypes =
+    let private debugResolvedTypes (output: Feather.ConsoleApplication.Output) resolvedTypes =
         if output.IsVerbose() then
             resolvedTypes
             |> List.map (fun ((domain, typeName), t) ->
@@ -352,8 +352,8 @@ module Resolver =
         [ parsedDomain ]
         |> resolve output
 
-    open ErrorHandling
-    open ErrorHandling.AsyncResult.Operators
+    open Feather.ErrorHandling
+    open Feather.ErrorHandling.AsyncResult.Operators
 
     let resolveOneAsync output (parseDomain: AsyncResult<ParsedDomain, ParseError>): AsyncResult<ResolvedType list, AsyncResolveError> =
         asyncResult {

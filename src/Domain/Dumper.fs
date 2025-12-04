@@ -6,8 +6,8 @@ open FSharp.Compiler.Symbols
 module Dump =
     open TypeResolvers
 
-    type private Dump<'Type> = MF.ConsoleApplication.Output -> 'Type -> unit
-    type private DumpMany<'Type> = MF.ConsoleApplication.Output -> 'Type seq -> unit
+    type private Dump<'Type> = Feather.ConsoleApplication.Output -> 'Type -> unit
+    type private DumpMany<'Type> = Feather.ConsoleApplication.Output -> 'Type seq -> unit
 
     type private Format<'Type> = 'Type -> string
 
@@ -247,7 +247,7 @@ module Dump =
                 (stream.Name |> formatTypeName)
                 (stream.EventType |> TypeName.value)
 
-    let parsedType (output: MF.ConsoleApplication.Output) =
+    let parsedType (output: Feather.ConsoleApplication.Output) =
         formatResolvedType FullType
         >> output.Message
         >> output.NewLine

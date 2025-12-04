@@ -32,7 +32,7 @@ module Checker =
 
         | Unresolved (TypeName unresolved) -> failwithf "Can not check unresolved type %A." unresolved
 
-    let check (output: MF.ConsoleApplication.Output) (resolvedTypes: ResolvedType list): Result<DomainType list, _> =
+    let check (output: Feather.ConsoleApplication.Output) (resolvedTypes: ResolvedType list): Result<DomainType list, _> =
         let allTypeNames =
             resolvedTypes
             |> List.collect allTypeNamesOfResolvedType
