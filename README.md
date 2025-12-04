@@ -1,9 +1,9 @@
 Domain Resolver
 ===============
 
-[![NuGet Version and Downloads count](https://buildstats.info/nuget/Tuc.DomainResolver)](https://www.nuget.org/packages/Tuc.DomainResolver)
-![Check](https://github.com/TypedUseCase/domain-resolver/workflows/Check/badge.svg)
-[![tuc-docs](https://img.shields.io/badge/documentation-tuc-orange.svg)](https://typedusecase.github.io/domain/)
+[![NuGet](https://img.shields.io/nuget/v/Tuc.DomainResolver.svg)](https://www.nuget.org/packages/Tuc.DomainResolver)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Tuc.DomainResolver.svg)](https://www.nuget.org/packages/Tuc.DomainResolver)
+[![Checks](https://github.com/TypedUseCase/domain-resolver/actions/workflows/tests.yaml/badge.svg)](https://github.com/TypedUseCase/domain-resolver/actions/workflows/tests.yaml)
 
 > Library for resolving a **Domain types** out of a F# script (`.fsx`) file(s).
 
