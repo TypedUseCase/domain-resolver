@@ -2,7 +2,7 @@ module Tuc.Domain.Test.Parser
 
 open Expecto
 open System.IO
-open ErrorHandling
+open Feather.ErrorHandling
 
 let (</>) a b = Path.Combine(a, b)
 
@@ -275,7 +275,7 @@ module Domain =
 
 [<Tests>]
 let parserTests =
-    let output = MF.ConsoleStyle.ConsoleStyle()
+    let output = Feather.ConsoleStyle.ConsoleStyle()
 
     testList "Domain.Resolver" [
         testCase "should parse and resolve types" <| fun _ ->

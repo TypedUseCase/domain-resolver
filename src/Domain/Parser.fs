@@ -21,9 +21,9 @@ module ParseError =
 module Parser =
     open System
     open System.IO
-    open ErrorHandling
+    open Feather.ErrorHandling
 
-    let private parseAndCheck (output: MF.ConsoleApplication.Output) (checker: FSharpChecker) (file, input) = asyncResult {
+    let private parseAndCheck (output: Feather.ConsoleApplication.Output) (checker: FSharpChecker) (file, input) = asyncResult {
         if output.IsVerbose() then output.Title "ParseAndCheck"
 
         if output.IsVeryVerbose() then output.Section "GetProjectOptionsFromScript"
@@ -69,7 +69,7 @@ module Parser =
 
         if output.IsVeryVerbose() then output.Section "ParseAndCheckProject"
 
-        let! checkProjectResults =
+        let! (checkProjectResults: FSharpCheckProjectResults) =
             fprojOptions
             |> checker.ParseAndCheckProject
             |> AsyncResult.ofAsyncCatch ParseAndCheckProjectFailed
@@ -87,7 +87,7 @@ module Parser =
             )
     }
 
-    let parse (output: MF.ConsoleApplication.Output) file =
+    let parse (output: Feather.ConsoleApplication.Output) file =
         let checker = FSharpChecker.Create()    // to allow implementation details add: keepAssemblyContents=true
 
         if output.IsVerbose() then output.Title <| sprintf "Parse %A" file
